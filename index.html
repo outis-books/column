@@ -22,6 +22,23 @@
   :root[data-theme="dark"]{ --bg:#15130f; --card:#1e1b16; --ink:#ece7de; --sub:#9a9287;
                             --line:#2f2a22; --accent:#c9a86a; --hover:#25211a; }
 
+  .m4{--ma:#A6512F; --mt:#F7E4D7}
+  .m5{--ma:#2F5573; --mt:#DEE9F3}
+  .m6{--ma:#6B4270; --mt:#EDDFEF}
+  .m7{--ma:#2C5A3B; --mt:#DCEBE0}
+  @media (prefers-color-scheme: dark){
+    .m4{--ma:#DE9366; --mt:#2E1C13} .m5{--ma:#84AED4; --mt:#141F2B}
+    .m6{--ma:#BE90C5; --mt:#251829} .m7{--ma:#7CC094; --mt:#12241A}
+  }
+  :root[data-theme="dark"] .m4{--ma:#DE9366; --mt:#2E1C13}
+  :root[data-theme="dark"] .m5{--ma:#84AED4; --mt:#141F2B}
+  :root[data-theme="dark"] .m6{--ma:#BE90C5; --mt:#251829}
+  :root[data-theme="dark"] .m7{--ma:#7CC094; --mt:#12241A}
+  :root[data-theme="light"] .m4{--ma:#A6512F; --mt:#F7E4D7}
+  :root[data-theme="light"] .m5{--ma:#2F5573; --mt:#DEE9F3}
+  :root[data-theme="light"] .m6{--ma:#6B4270; --mt:#EDDFEF}
+  :root[data-theme="light"] .m7{--ma:#2C5A3B; --mt:#DCEBE0}
+
   *{box-sizing:border-box; margin:0; padding:0}
   body{
     background:var(--bg); color:var(--ink);
@@ -29,6 +46,8 @@
     line-height:1.7; -webkit-font-smoothing:antialiased;
     padding:0 20px 64px;
   }
+  body::before{content:""; display:block; height:6px; margin:0 -20px 0;
+    background:linear-gradient(90deg,#A6512F 0 9%,#2F5573 9% 36%,#6B4270 36% 79%,#2C5A3B 79% 100%)}
   .wrap{max-width:680px; margin:0 auto}
 
   header{padding:56px 0 30px; text-align:center; border-bottom:1px solid var(--line)}
@@ -39,29 +58,39 @@
   .byline{margin-top:20px; font-size:.87rem; color:var(--sub)}
   .byline b{color:var(--ink); font-weight:600}
 
-  .count{padding:26px 0 14px; font-size:.8rem; letter-spacing:.06em;
+  .count{padding:26px 0 6px; font-size:.8rem; letter-spacing:.06em;
          color:var(--sub); text-align:center}
+  .tally{display:flex; justify-content:center; flex-wrap:wrap; gap:7px; padding-bottom:18px}
+  .tally span{font-size:.72rem; letter-spacing:.04em; color:var(--ma);
+              background:var(--mt); border-radius:100px; padding:3px 11px}
 
   ol{list-style:none}
-  li{border-bottom:1px solid var(--line)}
-  a.item{
-    display:flex; gap:16px; align-items:baseline;
-    padding:17px 12px; text-decoration:none; color:inherit;
-    border-radius:8px; transition:background .15s ease;
+  li.mh{
+    margin:26px 0 10px; font-size:.74rem; letter-spacing:.18em;
+    color:var(--ma); font-weight:600; display:flex; align-items:center; gap:10px;
   }
-  a.item:hover{background:var(--hover)}
+  li.mh::after{content:""; flex:1; height:1px; background:var(--ma); opacity:.28}
+  li.row{margin-bottom:6px}
+  a.item{
+    display:flex; gap:14px; align-items:baseline;
+    padding:15px 16px; text-decoration:none; color:inherit;
+    background:var(--mt); border-left:6px solid var(--ma);
+    transition:transform .13s ease, box-shadow .13s ease;
+  }
+  a.item:hover{transform:translateX(2px); box-shadow:0 3px 12px rgba(0,0,0,.09)}
   .num{
-    flex:0 0 auto; width:26px; text-align:right;
-    font-size:.78rem; color:var(--accent); font-weight:600;
-    font-variant-numeric:tabular-nums; padding-top:3px;
+    flex:0 0 auto; min-width:24px; text-align:center;
+    font-size:.72rem; color:#fff; background:var(--ma); font-weight:600;
+    font-variant-numeric:tabular-nums; border-radius:100px; padding:2px 7px;
   }
   .body{flex:1 1 auto; min-width:0}
   .title{font-size:1.03rem; line-height:1.55; letter-spacing:-.01em}
   .meta{margin-top:5px; font-size:.78rem; color:var(--sub);
         display:flex; flex-wrap:wrap; gap:9px; align-items:center}
   .date{font-variant-numeric:tabular-nums}
-  .book{color:var(--accent)}
-  .book::before{content:"· "; color:var(--sub)}
+  .book{color:var(--ma); font-weight:600}
+  .book::before{content:"· "; color:var(--sub); font-weight:400}
+  .mh .cnt{letter-spacing:.04em; opacity:.75; font-weight:400}
 
   footer{margin-top:44px; padding-top:26px; border-top:1px solid var(--line);
          text-align:center; font-size:.83rem; color:var(--sub); line-height:2}
@@ -88,6 +117,7 @@
 </header>
 
 <p class="count">전 33편 · 2026.04.15 — 연재 중</p>
+<div class="tally" id="tally"></div>
 
 <ol id="list"></ol>
 
@@ -136,14 +166,29 @@ const D = [
  [33,"2026.07.29","각자의 골방, 마콘도",207362,"백년의 고독"]
 ];
 const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-document.getElementById('list').innerHTML = D.map(([n,d,t,id,b]) => `
-  <li><a class="item" href="https://www.lecturernews.com/news/articleView.html?idxno=${id}" target="_blank" rel="noopener">
+const mo = d => d.slice(5,7).replace(/^0/,'');
+const counts = D.reduce((a,[,d]) => (a[mo(d)] = (a[mo(d)]||0)+1, a), {});
+let cur = '';
+document.getElementById('list').innerHTML = D.map(([n,d,t,id,b]) => {
+  const m = mo(d);
+  let head = '';
+  if (m !== cur) {
+    cur = m;
+    head = `<li class="mh m${m}"><span>${d.slice(0,4)}년 ${m}월</span><span class="cnt">${counts[m]}편</span></li>`;
+  }
+  return head + `
+  <li class="row m${m}"><a class="item" href="https://www.lecturernews.com/news/articleView.html?idxno=${id}" target="_blank" rel="noopener">
     <span class="num">${n}</span>
     <span class="body">
       <span class="title">${esc(t)}</span>
       <span class="meta"><span class="date">${d}</span>${b ? `<span class="book">${esc(b)}</span>` : ''}</span>
     </span>
-  </a></li>`).join('');
+  </a></li>`;
+}).join('');
+
+document.getElementById('tally').innerHTML = Object.keys(counts)
+  .sort((a,b) => a-b)
+  .map(m => `<span class="m${m}">${m}월 ${counts[m]}편</span>`).join('');
 </script>
 </body>
 </html>
