@@ -118,7 +118,7 @@
   <p class="byline"><b>이서윤</b> · 북칼럼니스트 &nbsp;|&nbsp; 한국강사신문 연재</p>
 </header>
 
-<p class="count">전 34편 · 2026.04.15 — 연재 중</p>
+<p class="count">전 35편 · 2026.04.15 — 연재 중</p>
 <div class="tally" id="tally"></div>
 
 <ol id="list"></ol>
@@ -166,11 +166,14 @@ const D = [
  [31,"2026.07.20","319일의 기록, 나는 다른 삶을 선택했다",206699,"아티스트 웨이"],
  [32,"2026.07.23","텃밭과 글밭",206922,""],
  [33,"2026.07.29","각자의 골방, 마콘도",207362,"백년의 고독"],
- [34,"2026.08.06","고향이라 믿었던 곳",207843,"광인일기"]
+ [34,"2026.08.06","고향이라 믿었던 곳",207843,"광인일기"],
+ [35,"2026.08.12","50대 후반부터 90대 초반까지, 함께 읽고 쓴 8주의 기록",208325,""]
 ];
 const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const mo = d => d.slice(5,7).replace(/^0/,'');
 const counts = D.reduce((a,[,d]) => (a[mo(d)] = (a[mo(d)]||0)+1, a), {});
+/* 편수는 목록에서 세어 쓴다 — 한 줄 더할 때 위 문구를 따로 안 고쳐도 되게 */
+document.querySelector('.count').textContent = `전 ${D.length}편 · ${D[0][1].replace(/\./g,'.')} — 연재 중`;
 let cur = '';
 document.getElementById('list').innerHTML = D.map(([n,d,t,id,b]) => {
   const m = mo(d);
