@@ -1,0 +1,38 @@
+name: 새 칼럼 자동 추가
+
+# 한국강사신문에 「이서윤의 문장연구소」가 새로 실리면 이 목록에 저절로 더한다.
+# 칼럼 섹션 RSS에는 스무 편(나흘치쯤)이 담기므로 하루 네 번 보면 놓치지 않는다.
+# 손으로 돌리고 싶으면 Actions 탭에서 「Run workflow」를 누르면 된다.
+
+on:
+  schedule:
+    - cron: '0 0,6,12,18 * * *'   # UTC · 한국시간 09시·15시·21시·03시
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 새 칼럼 찾아 목록에 더하기
+        run: node scripts/sync.mjs
+
+      - name: 바뀌었으면 커밋
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "바뀐 것 없음 — 커밋하지 않는다"
+            exit 0
+          fi
+          git config user.name  "column-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "새 칼럼 자동 추가 ($(date -u +%Y-%m-%d))"
+          git push
