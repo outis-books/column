@@ -27,19 +27,49 @@
   .m6{--ma:#6B4270; --mt:#EDDFEF}
   .m7{--ma:#2C5A3B; --mt:#DCEBE0}
   .m8{--ma:#8A5A16; --mt:#F6EFE2}
+  .m9{--ma:#8A2E46; --mt:#F8E1E7}
   @media (prefers-color-scheme: dark){
     .m4{--ma:#DE9366; --mt:#2E1C13} .m5{--ma:#84AED4; --mt:#141F2B}
     .m6{--ma:#BE90C5; --mt:#251829} .m7{--ma:#7CC094; --mt:#12241A}
-    .m8{--ma:#D9A85C; --mt:#2B1F0C}
+    .m8{--ma:#D9A85C; --mt:#2B1F0C} .m9{--ma:#E495AA; --mt:#2B141B}
   }
   :root[data-theme="dark"] .m4{--ma:#DE9366; --mt:#2E1C13}
   :root[data-theme="dark"] .m5{--ma:#84AED4; --mt:#141F2B}
   :root[data-theme="dark"] .m6{--ma:#BE90C5; --mt:#251829}
   :root[data-theme="dark"] .m7{--ma:#7CC094; --mt:#12241A}
+  :root[data-theme="dark"] .m8{--ma:#D9A85C; --mt:#2B1F0C}
+  :root[data-theme="dark"] .m9{--ma:#E495AA; --mt:#2B141B}
   :root[data-theme="light"] .m4{--ma:#A6512F; --mt:#F7E4D7}
   :root[data-theme="light"] .m5{--ma:#2F5573; --mt:#DEE9F3}
   :root[data-theme="light"] .m6{--ma:#6B4270; --mt:#EDDFEF}
   :root[data-theme="light"] .m7{--ma:#2C5A3B; --mt:#DCEBE0}
+  :root[data-theme="light"] .m8{--ma:#8A5A16; --mt:#F6EFE2}
+  :root[data-theme="light"] .m9{--ma:#8A2E46; --mt:#F8E1E7}
+
+  /* 10월 이후를 위해 미리 깔아 둔다 — 새 달이 와도 색이 비지 않는다 */
+  .m10{--ma:#2B5F6B; --mt:#DDEBEE}
+  .m11{--ma:#5A4A2E; --mt:#EFE8DA}
+  .m12{--ma:#3B4370; --mt:#E1E4F2}
+  .m1{--ma:#6B2F2F; --mt:#F4E0E0}
+  .m2{--ma:#2F6B5A; --mt:#DDEFE9}
+  .m3{--ma:#7A4A6B; --mt:#F1E2EE}
+  @media (prefers-color-scheme: dark){
+    .m10{--ma:#7FBECB; --mt:#122226} .m11{--ma:#C4AC7E; --mt:#231E12}
+    .m12{--ma:#96A0DC; --mt:#181B2E} .m1{--ma:#D68F8F; --mt:#291414}
+    .m2{--ma:#7FCBB6; --mt:#12261F} .m3{--ma:#C79ABB; --mt:#271A24}
+  }
+  :root[data-theme="dark"] .m10{--ma:#7FBECB; --mt:#122226}
+  :root[data-theme="dark"] .m11{--ma:#C4AC7E; --mt:#231E12}
+  :root[data-theme="dark"] .m12{--ma:#96A0DC; --mt:#181B2E}
+  :root[data-theme="dark"] .m1{--ma:#D68F8F; --mt:#291414}
+  :root[data-theme="dark"] .m2{--ma:#7FCBB6; --mt:#12261F}
+  :root[data-theme="dark"] .m3{--ma:#C79ABB; --mt:#271A24}
+  :root[data-theme="light"] .m10{--ma:#2B5F6B; --mt:#DDEBEE}
+  :root[data-theme="light"] .m11{--ma:#5A4A2E; --mt:#EFE8DA}
+  :root[data-theme="light"] .m12{--ma:#3B4370; --mt:#E1E4F2}
+  :root[data-theme="light"] .m1{--ma:#6B2F2F; --mt:#F4E0E0}
+  :root[data-theme="light"] .m2{--ma:#2F6B5A; --mt:#DDEFE9}
+  :root[data-theme="light"] .m3{--ma:#7A4A6B; --mt:#F1E2EE}
 
   *{box-sizing:border-box; margin:0; padding:0}
   body{
@@ -48,8 +78,9 @@
     line-height:1.7; -webkit-font-smoothing:antialiased;
     padding:0 20px 64px;
   }
+  /* 띠는 아래 스크립트가 달마다 편수 비율로 다시 그린다 — 손으로 고칠 일이 없다 */
   body::before{content:""; display:block; height:6px; margin:0 -20px 0;
-    background:linear-gradient(90deg,#A6512F 0 9%,#2F5573 9% 36%,#6B4270 36% 79%,#2C5A3B 79% 100%)}
+    background:var(--bar, var(--accent))}
   .wrap{max-width:680px; margin:0 auto}
 
   header{padding:56px 0 30px; text-align:center; border-bottom:1px solid var(--line)}
@@ -118,7 +149,7 @@
   <p class="byline"><b>이서윤</b> · 북칼럼니스트 &nbsp;|&nbsp; 한국강사신문 연재</p>
 </header>
 
-<p class="count">전 35편 · 2026.04.15 — 연재 중</p>
+<p class="count" id="count"></p>
 <div class="tally" id="tally"></div>
 
 <ol id="list"></ol>
@@ -198,6 +229,31 @@ document.getElementById('list').innerHTML = D.map(([n,d,t,id,b]) => {
 document.getElementById('tally').innerHTML = Object.keys(counts)
   .sort((a,b) => a-b)
   .map(m => `<span class="m${m}">${m}월 ${counts[m]}편</span>`).join('');
+
+/* 전 N편 — 데이터에서 센다 */
+document.getElementById('count').textContent =
+  `전 ${D.length}편 · ${D[0][1]} — 연재 중`;
+
+/* 맨 위 띠 — 달이 나온 순서대로, 달마다 편수 비율만큼 칠한다.
+   새 달이 늘어도 손댈 것이 없다. 색은 .m1~.m12에서 그대로 읽어 온다. */
+(() => {
+  const seen = [];
+  D.forEach(([, d]) => { const m = mo(d); if (!seen.includes(m)) seen.push(m); });
+  const probe = document.createElement('span');
+  probe.style.display = 'none';
+  document.body.appendChild(probe);
+  const stops = [];
+  let at = 0;
+  seen.forEach((m, i) => {
+    probe.className = 'm' + m;
+    const c = getComputedStyle(probe).getPropertyValue('--ma').trim() || '#8a6f47';
+    const to = i === seen.length - 1 ? 100 : at + (counts[m] / D.length) * 100;
+    stops.push(`${c} ${at.toFixed(2)}% ${to.toFixed(2)}%`);
+    at = to;
+  });
+  probe.remove();
+  document.documentElement.style.setProperty('--bar', `linear-gradient(90deg,${stops.join(',')})`);
+})();
 </script>
 </body>
 </html>
