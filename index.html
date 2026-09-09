@@ -136,9 +136,11 @@
      아래 칼럼 카드는 파스텔 바탕이라, 이 둘은 색을 꽉 채워 대비로 띄운다.
      색은 대문(outis-books.github.io)에서 쓰던 두 도구의 집안 색 그대로. */
   .tools{margin:34px 0 10px}
-  .tools-label{font-size:.73rem; letter-spacing:.18em; color:var(--sub);
-               text-align:center; margin-bottom:14px}
-  .tools-label::before, .tools-label::after{content:"—"; opacity:.4; margin:0 9px}
+  /* 머리말은 칼럼 목록의 회색 글씨와 달라야 눈에 걸린다 — 크게, 강조색으로 */
+  .tools-label{font-size:1.05rem; font-weight:600; letter-spacing:.02em;
+               color:var(--accent); text-align:center; margin-bottom:15px}
+  .tools-label::before, .tools-label::after{content:"—"; opacity:.45; margin:0 10px;
+               font-weight:400}
   .tools-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
 
   .t1{--tc:#A6512F}   /* 독서 편식 진단 — 테라코타 */
@@ -165,7 +167,9 @@
   .tool-name i{font-style:normal; font-size:.9rem; opacity:.85}
   .tool-desc{display:block; margin-top:7px; font-size:.8rem; line-height:1.7;
              color:rgba(255,255,255,.86)}
-  @media (max-width:520px){ .tools-grid{grid-template-columns:1fr} .tools{margin-top:26px} }
+  @media (max-width:520px){ .tools-grid{grid-template-columns:1fr} .tools{margin-top:26px}
+    .tools-label{font-size:.95rem}
+    .tools-label::before, .tools-label::after{margin:0 6px} }
   @media (max-width:520px){
     header{padding:40px 0 24px}
     h1{font-size:1.5rem}
@@ -262,7 +266,7 @@ const counts = D.reduce((a,[,d]) => (a[mo(d)] = (a[mo(d)]||0)+1, a), {});
 /* 편수는 목록에서 세어 쓴다 — 한 줄 더할 때 위 문구를 따로 안 고쳐도 되게 */
 document.querySelector('.count').textContent = `전 ${D.length}편 · ${D[0][1].replace(/\./g,'.')} — 연재 중`;
 let cur = '';
-document.getElementById('list').innerHTML = D.map(([n,d,t,id,b]) => {
+document.getElementById('list').innerHTML = [...D].reverse().map(([n,d,t,id,b]) => {
   const m = mo(d);
   let head = '';
   if (m !== cur) {
@@ -280,7 +284,7 @@ document.getElementById('list').innerHTML = D.map(([n,d,t,id,b]) => {
 }).join('');
 
 document.getElementById('tally').innerHTML = Object.keys(counts)
-  .sort((a,b) => a-b)
+  .sort((a,b) => b-a)
   .map(m => `<span class="m${m}">${m}월 ${counts[m]}편</span>`).join('');
 
 /* 전 N편 — 데이터에서 센다 */
